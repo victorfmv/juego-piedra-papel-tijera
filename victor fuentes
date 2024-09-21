@@ -1,0 +1,75 @@
+import random
+
+def obtener_opcion_jugador(prompt):
+    """Solicita al jugador que elija piedra, papel o tijera y valida la entrada."""
+    opciones_validas = ["piedra", "papel", "tijera"]
+    while True:
+        eleccion = input(prompt).lower()
+        if eleccion in opciones_validas:
+            return eleccion
+        else:
+            print("Opción no válida. Debes elegir entre piedra, papel o tijera.")
+
+def jugar_contra_computadora():
+    """Realiza un juego de piedra, papel o tijera contra la computadora."""
+    jugador = obtener_opcion_jugador("Elige piedra, papel o tijera: ")
+    computadora = random.choice(["piedra", "papel", "tijera"])
+    print(f"Computadora elige: {computadora}")
+
+    if jugador == computadora:
+        resultado = "¡Es un empate!"
+    elif (jugador == "piedra" and computadora == "tijera") or \
+         (jugador == "papel" and computadora == "piedra") or \
+         (jugador == "tijera" and computadora == "papel"):
+        resultado = "¡Ganaste!"
+    else:
+        resultado = "¡Perdiste!"
+
+    print(resultado)
+
+def jugar_contra_persona():
+    """Realiza un juego de piedra, papel o tijera entre dos jugadores."""
+    print("Jugador 1:")
+    jugador1 = obtener_opcion_jugador("Elige piedra, papel o tijera: ")
+    
+    print("Jugador 2:")
+    jugador2 = obtener_opcion_jugador("Elige piedra, papel o tijera: ")
+
+    if jugador1 == jugador2:
+        resultado = "¡Es un empate!"
+    elif (jugador1 == "piedra" and jugador2 == "tijera") or \
+         (jugador1 == "papel" and jugador2 == "piedra") or \
+         (jugador1 == "tijera" and jugador2 == "papel"):
+        resultado = "¡Jugador 1 gana!"
+    else:
+        resultado = "¡Jugador 2 gana!"
+
+    print(resultado)  
+
+def ejecutar_pruebas():
+    """Función para realizar pruebas unitarias sobre las funciones del juego."""
+    assert obtener_opcion_jugador("piedra") in ["piedra", "papel", "tijera"], "Error en la opción del jugador"
+
+def main():
+    """Función principal que controla el flujo del juego."""
+    while True:
+        print("\nSelecciona el modo de juego:")
+        print("1. Jugar contra la computadora")
+        print("2. Jugar contra otra persona")
+        print("3. Salir")
+        
+        seleccion = input("Introduce el número de tu elección: ")
+
+        if seleccion == '1':
+            jugar_contra_computadora()
+        elif seleccion == '2':
+            jugar_contra_persona()
+        elif seleccion == '3':
+            print("¡Gracias por jugar! ¡Hasta la próxima!")
+            break  
+        else:
+            print("Opción no válida. Por favor, elige 1, 2 o 3.")
+
+if __name__ == "__main__":
+    main() 
+    ejecutar_pruebas() 
