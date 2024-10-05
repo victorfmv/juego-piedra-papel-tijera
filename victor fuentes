@@ -11,44 +11,110 @@ def obtener_opcion_jugador(prompt):
             print("Opción no válida. Debes elegir entre piedra, papel o tijera.")
 
 def jugar_contra_computadora():
-    """Realiza un juego de piedra, papel o tijera contra la computadora."""
-    jugador = obtener_opcion_jugador("Elige piedra, papel o tijera: ")
-    computadora = random.choice(["piedra", "papel", "tijera"])
-    print(f"Computadora elige: {computadora}")
+    """Jugar varias rondas contra la computadora, registrando elecciones y resultados en listas."""
+    rondas = int(input("¿Cuántas rondas deseas jugar contra la computadora? "))
+    victorias_jugador = 0
+    victorias_computadora = 0
 
-    if jugador == computadora:
-        resultado = "¡Es un empate!"
-    elif (jugador == "piedra" and computadora == "tijera") or \
-         (jugador == "papel" and computadora == "piedra") or \
-         (jugador == "tijera" and computadora == "papel"):
-        resultado = "¡Ganaste!"
+    # Listas para almacenar las elecciones
+    elecciones_jugador = []
+    elecciones_computadora = []
+    resultados = []  # Lista para almacenar los resultados de cada ronda
+
+    for _ in range(rondas):
+        jugador = obtener_opcion_jugador("Elige piedra, papel o tijera: ")
+        computadora = random.choice(["piedra", "papel", "tijera"])
+        
+        # Almacenar las elecciones
+        elecciones_jugador.append(jugador)
+        elecciones_computadora.append(computadora)
+
+        print(f"Computadora elige: {computadora}")
+
+        if jugador == computadora:
+            resultados.append("Empate")
+            print("¡Es un empate!")
+        elif (jugador == "piedra" and computadora == "tijera") or \
+             (jugador == "papel" and computadora == "piedra") or \
+             (jugador == "tijera" and computadora == "papel"):
+            resultados.append("Jugador gana")
+            print("¡Ganaste esta ronda!")
+            victorias_jugador += 1
+        else:
+            resultados.append("Computadora gana")
+            print("¡Perdiste esta ronda!")
+            victorias_computadora += 1
+
+    # Mostrar el resultado final
+    print(f"\nResultado final: Jugador {victorias_jugador} - Computadora {victorias_computadora}")
+    if victorias_jugador > victorias_computadora:
+        print("¡Ganaste el juego!")
+    elif victorias_jugador < victorias_computadora:
+        print("¡La computadora ganó el juego!")
     else:
-        resultado = "¡Perdiste!"
+        print("¡El juego terminó en empate!")
 
-    print(resultado)
+    # Mostrar las listas con elecciones y resultados
+    print("\nHistorial de elecciones y resultados:")
+    for i in range(rondas):
+        print(f"Ronda {i+1}: Jugador eligió {elecciones_jugador[i]}, Computadora eligió {elecciones_computadora[i]} - Resultado: {resultados[i]}")
 
 def jugar_contra_persona():
-    """Realiza un juego de piedra, papel o tijera entre dos jugadores."""
-    print("Jugador 1:")
-    jugador1 = obtener_opcion_jugador("Elige piedra, papel o tijera: ")
-    
-    print("Jugador 2:")
-    jugador2 = obtener_opcion_jugador("Elige piedra, papel o tijera: ")
+    """Jugar varias rondas entre dos jugadores, registrando elecciones y resultados en una matriz."""
+    rondas = int(input("¿Cuántas rondas desean jugar? "))
+    victorias_jugador1 = 0
+    victorias_jugador2 = 0
 
-    if jugador1 == jugador2:
-        resultado = "¡Es un empate!"
-    elif (jugador1 == "piedra" and jugador2 == "tijera") or \
-         (jugador1 == "papel" and jugador2 == "piedra") or \
-         (jugador1 == "tijera" and jugador2 == "papel"):
-        resultado = "¡Jugador 1 gana!"
+    # Matriz para almacenar las elecciones y resultados de cada ronda
+    historial = []
+
+    for _ in range(rondas):
+        print("Jugador 1:")
+        jugador1 = obtener_opcion_jugador("Elige piedra, papel o tijera: ")
+        
+        print("Jugador 2:")
+        jugador2 = obtener_opcion_jugador("Elige piedra, papel o tijera: ")
+
+        if jugador1 == jugador2:
+            resultado = "Empate"
+            print("¡Es un empate!")
+        elif (jugador1 == "piedra" and jugador2 == "tijera") or \
+             (jugador1 == "papel" and jugador2 == "piedra") or \
+             (jugador1 == "tijera" and jugador2 == "papel"):
+            resultado = "Jugador 1 gana"
+            print("¡Jugador 1 gana esta ronda!")
+            victorias_jugador1 += 1
+        else:
+            resultado = "Jugador 2 gana"
+            print("¡Jugador 2 gana esta ronda!")
+            victorias_jugador2 += 1
+
+        # Registrar la ronda en la matriz
+        historial.append([jugador1, jugador2, resultado])
+
+    # Mostrar el resultado final
+    print(f"\nResultado final: Jugador 1 {victorias_jugador1} - Jugador 2 {victorias_jugador2}")
+    if victorias_jugador1 > victorias_jugador2:
+        print("¡Jugador 1 gana el juego!")
+    elif victorias_jugador1 < victorias_jugador2:
+        print("¡Jugador 2 gana el juego!")
     else:
-        resultado = "¡Jugador 2 gana!"
+        print("¡El juego terminó en empate!")
 
-    print(resultado)  
+    # Mostrar el historial de elecciones y resultados
+    print("\nHistorial de elecciones y resultados:")
+    for i in range(rondas):
+        print(f"Ronda {i+1}: Jugador 1 eligió {historial[i][0]}, Jugador 2 eligió {historial[i][1]} - Resultado: {historial[i][2]}")
 
 def ejecutar_pruebas():
     """Función para realizar pruebas unitarias sobre las funciones del juego."""
+    # Caso límite: entradas inválidas
     assert obtener_opcion_jugador("piedra") in ["piedra", "papel", "tijera"], "Error en la opción del jugador"
+    # Simular una ronda con resultados predefinidos
+    print("\nPrueba: Jugar una ronda contra la computadora")
+    jugar_contra_computadora()
+    print("\nPrueba: Jugar una ronda entre dos jugadores")
+    jugar_contra_persona()
 
 def main():
     """Función principal que controla el flujo del juego."""
@@ -72,4 +138,4 @@ def main():
 
 if __name__ == "__main__":
     main() 
-    ejecutar_pruebas() 
+    ejecutar_pruebas()
