@@ -1,4 +1,6 @@
 import random
+import unittest
+from unittest.mock import patch
 
 def obtener_opcion_jugador(prompt):
     """Solicita al jugador que elija piedra, papel o tijera y valida la entrada."""
@@ -9,6 +11,11 @@ def obtener_opcion_jugador(prompt):
             return eleccion
         else:
             print("Opción no válida. Debes elegir entre piedra, papel o tijera.")
+
+def guardar_historial(filename, contenido):
+    """Guarda el historial de elecciones y resultados en un archivo de texto."""
+    with open(filename, "a") as file:
+        file.write(contenido + "\n")
 
 def jugar_contra_computadora():
     """Jugar varias rondas contra la computadora, registrando elecciones y resultados en listas."""
@@ -54,10 +61,12 @@ def jugar_contra_computadora():
     else:
         print("¡El juego terminó en empate!")
 
-    # Mostrar las listas con elecciones y resultados
+    # Mostrar las listas con elecciones y resultados y guardarlo en archivo
     print("\nHistorial de elecciones y resultados:")
     for i in range(rondas):
-        print(f"Ronda {i+1}: Jugador eligió {elecciones_jugador[i]}, Computadora eligió {elecciones_computadora[i]} - Resultado: {resultados[i]}")
+        linea = f"Ronda {i+1}: Jugador eligió {elecciones_jugador[i]}, Computadora eligió {elecciones_computadora[i]} - Resultado: {resultados[i]}"
+        print(linea)
+        guardar_historial("historial_computadora.txt", linea)
 
 def jugar_contra_persona():
     """Jugar varias rondas entre dos jugadores, registrando elecciones y resultados en una matriz."""
@@ -101,20 +110,27 @@ def jugar_contra_persona():
     else:
         print("¡El juego terminó en empate!")
 
-    # Mostrar el historial de elecciones y resultados
+    # Mostrar el historial de elecciones y resultados, y guardarlo en archivo
     print("\nHistorial de elecciones y resultados:")
     for i in range(rondas):
-        print(f"Ronda {i+1}: Jugador 1 eligió {historial[i][0]}, Jugador 2 eligió {historial[i][1]} - Resultado: {historial[i][2]}")
+        linea = f"Ronda {i+1}: Jugador 1 eligió {historial[i][0]}, Jugador 2 eligió {historial[i][1]} - Resultado: {historial[i][2]}"
+        print(linea)
+        guardar_historial("historial_personas.txt", linea)
 
 def ejecutar_pruebas():
     """Función para realizar pruebas unitarias sobre las funciones del juego."""
-    # Caso límite: entradas inválidas
-    assert obtener_opcion_jugador("piedra") in ["piedra", "papel", "tijera"], "Error en la opción del jugador"
+    # Prueba de entradas válidas e inválidas
+    with patch('builtins.input', side_effect=['piedra']):
+        assert obtener_opcion_jugador("Test") == "piedra", "Error en la opción del jugador"
+    
     # Simular una ronda con resultados predefinidos
     print("\nPrueba: Jugar una ronda contra la computadora")
     jugar_contra_computadora()
+    
     print("\nPrueba: Jugar una ronda entre dos jugadores")
     jugar_contra_persona()
+
+    print("Todas las pruebas pasaron correctamente.")
 
 def main():
     """Función principal que controla el flujo del juego."""
@@ -137,5 +153,6 @@ def main():
             print("Opción no válida. Por favor, elige 1, 2 o 3.")
 
 if __name__ == "__main__":
-    main() 
+    main()
     ejecutar_pruebas()
+
