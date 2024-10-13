@@ -1,6 +1,7 @@
 import random
 import unittest
 from unittest.mock import patch
+from datetime import datetime
 
 def obtener_opcion_jugador(prompt):
     """Solicita al jugador que elija piedra, papel o tijera y valida la entrada."""
@@ -12,16 +13,38 @@ def obtener_opcion_jugador(prompt):
         else:
             print("Opción no válida. Debes elegir entre piedra, papel o tijera.")
 
+def generar_nombre_archivo():
+    """Genera un nombre de archivo único usando la fecha y hora."""
+    ahora = datetime.now().strftime("%Y%m%d_%H%M%S")
+    return f"historial_{ahora}.txt"
+
 def guardar_historial(filename, contenido):
     """Guarda el historial de elecciones y resultados en un archivo de texto."""
     with open(filename, "a") as file:
         file.write(contenido + "\n")
+
+def guardar_resumen(filename, victorias_jugador, victorias_computadora, rondas):
+    """Guarda un resumen final del juego."""
+    with open(filename, "a") as file:
+        resumen = f"\nResumen del juego:\nRondas jugadas: {rondas}\nVictorias jugador: {victorias_jugador}\nVictorias computadora: {victorias_computadora}\n"
+        file.write(resumen)
+
+def leer_historial(filename):
+    """Lee y muestra el historial de un archivo."""
+    try:
+        with open(filename, "r") as file:
+            contenido = file.read()
+            print("\nHistorial de la sesión:\n")
+            print(contenido)
+    except FileNotFoundError:
+        print(f"El archivo {filename} no existe.")
 
 def jugar_contra_computadora():
     """Jugar varias rondas contra la computadora, registrando elecciones y resultados en listas."""
     rondas = int(input("¿Cuántas rondas deseas jugar contra la computadora? "))
     victorias_jugador = 0
     victorias_computadora = 0
+    filename = generar_nombre_archivo()
 
     # Listas para almacenar las elecciones
     elecciones_jugador = []
@@ -66,13 +89,17 @@ def jugar_contra_computadora():
     for i in range(rondas):
         linea = f"Ronda {i+1}: Jugador eligió {elecciones_jugador[i]}, Computadora eligió {elecciones_computadora[i]} - Resultado: {resultados[i]}"
         print(linea)
-        guardar_historial("historial_computadora.txt", linea)
+        guardar_historial(filename, linea)
+
+    # Guardar el resumen del juego
+    guardar_resumen(filename, victorias_jugador, victorias_computadora, rondas)
 
 def jugar_contra_persona():
     """Jugar varias rondas entre dos jugadores, registrando elecciones y resultados en una matriz."""
     rondas = int(input("¿Cuántas rondas desean jugar? "))
     victorias_jugador1 = 0
     victorias_jugador2 = 0
+    filename = generar_nombre_archivo()
 
     # Matriz para almacenar las elecciones y resultados de cada ronda
     historial = []
@@ -115,7 +142,10 @@ def jugar_contra_persona():
     for i in range(rondas):
         linea = f"Ronda {i+1}: Jugador 1 eligió {historial[i][0]}, Jugador 2 eligió {historial[i][1]} - Resultado: {historial[i][2]}"
         print(linea)
-        guardar_historial("historial_personas.txt", linea)
+        guardar_historial(filename, linea)
+
+    # Guardar el resumen del juego
+    guardar_resumen(filename, victorias_jugador1, victorias_jugador2, rondas)
 
 def ejecutar_pruebas():
     """Función para realizar pruebas unitarias sobre las funciones del juego."""
@@ -138,7 +168,8 @@ def main():
         print("\nSelecciona el modo de juego:")
         print("1. Jugar contra la computadora")
         print("2. Jugar contra otra persona")
-        print("3. Salir")
+        print("3. Leer historial")
+        print("4. Salir")
         
         seleccion = input("Introduce el número de tu elección: ")
 
@@ -147,12 +178,14 @@ def main():
         elif seleccion == '2':
             jugar_contra_persona()
         elif seleccion == '3':
+            filename = input("Introduce el nombre del archivo del historial que deseas leer: ")
+            leer_historial(filename)
+        elif seleccion == '4':
             print("¡Gracias por jugar! ¡Hasta la próxima!")
             break  
         else:
-            print("Opción no válida. Por favor, elige 1, 2 o 3.")
+            print("Opción no válida. Por favor, elige 1, 2, 3 o 4.")
 
 if __name__ == "__main__":
     main()
     ejecutar_pruebas()
-
