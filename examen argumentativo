@@ -1,0 +1,138 @@
+import math
+import random
+
+# Funciones de cálculo
+def calcular_fuerza_centripeta(masa, velocidad, radio):
+    return (masa * velocidad**2) / radio
+
+def calcular_velocidad_segura(masa, radio, fuerza_max):
+    return math.sqrt((fuerza_max * radio) / masa)
+
+def calcular_velocidad_choque(m1, v1, m2, v2):
+    return (m1 * v1 + m2 * v2) / (m1 + m2)
+
+def calcular_altura_maxima(velocidad_inicial, angulo):
+    g = 9.81
+    return (velocidad_inicial * math.sin(math.radians(angulo)))**2 / (2 * g)
+
+def calcular_alcance_horizontal(velocidad_inicial, angulo):
+    g = 9.81
+    return (velocidad_inicial**2 * math.sin(math.radians(2 * angulo))) / g
+
+# Escenarios dinámicos
+def curva_peligrosa(tramo):
+    print(f"\n--- Tramo {tramo}: Curva peligrosa ---")
+    masa = 800  # Masa promedio de un auto de F1 en kg
+    radio = random.uniform(30, 80)  # Radio de la curva en metros
+    fuerza_max = 6000  # Fuerza máxima que los neumáticos pueden soportar (N)
+    velocidad_segura = calcular_velocidad_segura(masa, radio, fuerza_max) * 3.6  # Convertir a km/h
+
+    print(f"La curva tiene un radio de {radio:.2f} m.")
+    velocidad = float(input("¿A qué velocidad decides tomar la curva? (km/h): "))
+    velocidad_m_s = velocidad / 3.6  # Conversión a m/s
+
+    fuerza_c = calcular_fuerza_centripeta(masa, velocidad_m_s, radio)
+    print(f"La fuerza centrípeta requerida es {fuerza_c:.2f} N.")
+
+    if fuerza_c > fuerza_max:
+        print("Excedes la fuerza máxima y pierdes el control. ¡Te estrellas contra el muro!")
+        return "choque"
+    elif velocidad > velocidad_segura:
+        print("Tomas la curva demasiado rápido. Pierdes tiempo deslizándote.")
+        return "tiempo"
+    else:
+        print("Tomas la curva perfectamente.")
+        return "continuar"
+
+def colision_vehiculos(tramo):
+    print(f"\n--- Tramo {tramo}: Evitar colisión ---")
+    m1 = 800  # Masa de tu auto en kg
+    v1 = random.uniform(50, 80)  # Velocidad inicial de tu auto en km/h
+    v1_m_s = v1 / 3.6
+    m2 = 1200  # Masa del otro auto
+    v2 = random.uniform(30, 60)  # Velocidad inicial del otro auto en km/h
+    v2_m_s = v2 / 3.6
+
+    print(f"Velocidad de tu auto: {v1:.2f} km/h. Velocidad del otro auto: {v2:.2f} km/h.")
+    decision = input("¿Frenas (F) o intentas pasar al otro auto (P)? ").strip().upper()
+
+    if decision == "F":
+        print("Frenas a tiempo y evitas el choque.")
+        return "continuar"
+    elif decision == "P":
+        velocidad_final = calcular_velocidad_choque(m1, v1_m_s, m2, v2_m_s)
+        print(f"La velocidad final común tras el choque sería {velocidad_final:.2f} m/s.")
+        if velocidad_final > 25:
+            print("La colisión causa daños graves. ¡La carrera termina aquí!")
+            return "choque"
+        else:
+            print("Pasas al otro auto con pequeños daños.")
+            return "continuar"
+    else:
+        print("No reaccionaste a tiempo. ¡Te estrellas!")
+        return "choque"
+
+def rampa(tramo):
+    print(f"\n--- Tramo {tramo}: Salto desde una rampa ---")
+    angulo = random.uniform(10, 25)  # Ángulo de la rampa en grados
+    velocidad_requerida = random.uniform(70, 100)  # Velocidad requerida para el salto en km/h
+
+    print(f"La rampa tiene un ángulo de {angulo:.2f} grados.")
+    velocidad = float(input("¿A qué velocidad decides entrar a la rampa? (km/h): "))
+    velocidad_m_s = velocidad / 3.6  # Conversión a m/s
+
+    altura_maxima = calcular_altura_maxima(velocidad_m_s, angulo)
+    print(f"La altura máxima alcanzada será de {altura_maxima:.2f} m.")
+
+    if velocidad < velocidad_requerida:
+        print("No alcanzas la velocidad suficiente. ¡El auto cae!")
+        return "choque"
+    elif altura_maxima > 5:
+        print("Saltas con éxito y mantienes el control.")
+        return "continuar"
+    else:
+        print("Saltas, pero con dificultad. Pierdes tiempo.")
+        return "tiempo"
+
+# Historia del juego
+def historia():
+    print("""
+    ¡Bienvenido a la Gran Carrera!
+    Eres el piloto principal del equipo, compitiendo por el campeonato mundial.
+    Para ganar, debes superar una serie de desafíos a lo largo de la pista.
+    
+    ¡Buena suerte, piloto!
+    """)
+
+# Juego principal
+def main():
+    historia()
+    tramos = 5  # Número de tramos en la pista
+    tiempo_total = 0
+
+    for tramo in range(1, tramos + 1):
+        evento = random.choice(["curva", "colision", "rampa"])
+
+        if evento == "curva":
+            resultado = curva_peligrosa(tramo)
+        elif evento == "colision":
+            resultado = colision_vehiculos(tramo)
+        elif evento == "rampa":
+            resultado = rampa(tramo)
+
+        if resultado == "choque":
+            print("\ Bandera roja. La carrera termina para ti.")
+            return
+        elif resultado == "tiempo":
+            tiempo_total += 5  # Penalización de tiempo
+        elif resultado == "continuar":
+            tiempo_total += 0  # No se penaliza
+
+    print("\nHas cruzado la línea de meta!")
+    if tiempo_total > 10:
+        print(f"Tiempo total acumulado: {tiempo_total} segundos. Terminas en segundo lugar.")
+    else:
+        print(f"Tiempo total acumulado: {tiempo_total} segundos. ¡Eres el campeón mundial!")
+
+# Ejecutar el juego
+main()
